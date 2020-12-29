@@ -287,6 +287,7 @@ export class TrafficControl implements atlas.Control {
 
         this._button.classList.remove(removeClass);
         this._button.classList.add(addClass);
+
     }
 
     /**

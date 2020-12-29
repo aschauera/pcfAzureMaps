@@ -3,6 +3,10 @@
   <control namespace="pag" constructor="pcfAzureMapsClusters" version="0.0.1" display-name-key="pcfAzureMapsClusters" description-key="pcfAzureMapsClusters description" control-type="standard">
     <data-set name="dataSet" display-name-key="Dataset_Display_Key">
     </data-set>
+    <property name="LatitudeField" display-name-key="Latitude field name"
+        description-key="Name of the table column containing latitude values" of-type="Decimal" usage="input" required="true" />
+          <property name="LongitudeField" display-name-key="Longitude field name"
+        description-key="Name of the table column containing Longitude values" of-type="Decimal" usage="input" required="true" />
     <resources>
       <code path="index.ts" order="1"/>
       <css path="atlas.min.css" order="1" />

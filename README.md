@@ -1,3 +1,3 @@
-# Visual table
-A PowerApps PCF control that displays Power Platform tables as pins on Azure Map (fork from JSchroeder)
+# pcfAzureMaps
+A PowerApps PCF control that displays a dataset as pins on Azure Map 
 
