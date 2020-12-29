@@ -62,8 +62,7 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 		container.append(this._mapContainer);
 
 		//URL to custom endpoint to fetch Access token
-		//var url = 'https://adtokens.azurewebsites.net/api/HttpTrigger1?code=dv9Xz4tZQthdufbocOV9RLaaUhQoegXQJSeQQckm6DZyG/1ymppSoQ==';
-
+		//var url = 'https://adtokens.azurewebsites.net/api/HttpTrigger1?code=
 		//Initialize a map instance.
 		_map = new atlas.Map('map', {
 			view: "Auto",
@@ -72,7 +71,7 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 			//Add your Azure Maps subscription client ID to the map SDK. Get an Azure Maps client ID at https://azure.com/maps
 			authOptions: {
 				authType: atlas.AuthenticationType.subscriptionKey,
-				subscriptionKey: '_-yjL2AZ11E99UgKnkF_Uf3IYqDxRG5w5DWTjy5GBmg'
+				subscriptionKey: '<key>'
 			},
 			enableAccessibility: false,
 		});
