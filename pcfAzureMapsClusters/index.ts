@@ -8,14 +8,19 @@ type DataSet = ComponentFramework.PropertyTypes.DataSet;
 
 export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 	private featureCollection: atlas.data.FeatureCollection;
-
 	private map: atlas.Map;
+	private _pinSymbolLayer: atlas.layer.SymbolLayer;
+
+
 	private _layerSelectorContainer: HTMLDivElement;
 	private _layerFieldSet: HTMLFieldSetElement;
 	private _mapContainer: HTMLDivElement;
 	private _uploadShpButton: HTMLButtonElement;
-
 	private _layerCounter = 1;
+
+	private _latFieldName: string;
+	private _lonFieldName: string;
+
 
 	/**
 	 * Empty constructor.
@@ -34,16 +39,21 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 	 */
 	public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container: HTMLDivElement) {
 		let _map: atlas.Map;
+
+		this._latFieldName = context.parameters.LatitudeField.raw ? context.parameters.LatitudeField.raw : '';
+		this._lonFieldName = context.parameters.LongitudeField.raw ? context.parameters.LongitudeField.raw : '';
 		//create layer DIV
+		let _br = document.createElement('br');
 		this._layerSelectorContainer = document.createElement('div');
 		this._layerSelectorContainer.setAttribute("id", "layers");
 		this._layerSelectorContainer.setAttribute("style", "float:left;width:20%;min-width:50px;height:100%;");
 
 		this._layerFieldSet = document.createElement('fieldset');
+
 		for (var i = 0; i < 3; i++) {
 			var opt = document.createElement('input');
 			opt.setAttribute('type', 'checkbox');
-			opt.setAttribute('value', 'Layer ' + i);
+			opt.setAttribute('value', 'https://azuremapshapestorage.blob.core.windows.net/shapes/BezirksgrenzenAT.json');
 			opt.setAttribute('id', 'Layer' + i);
 			opt.addEventListener('click', this.toggleLayer);
 			var label = document.createElement('label');
@@ -51,6 +61,7 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 			label.innerHTML = 'Layer ' + i;
 			this._layerFieldSet.appendChild(opt);
 			this._layerFieldSet.appendChild(label);
+			this._layerFieldSet.appendChild(_br);
 		}
 		this._layerSelectorContainer.appendChild(this._layerFieldSet);
 		//create map DIV
@@ -71,7 +82,7 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 			//Add your Azure Maps subscription client ID to the map SDK. Get an Azure Maps client ID at https://azure.com/maps
 			authOptions: {
 				authType: atlas.AuthenticationType.subscriptionKey,
-				subscriptionKey: '<key>'
+				subscriptionKey: context.parameters.AzureMapsKey.raw ? context.parameters.AzureMapsKey.raw : ''
 			},
 			enableAccessibility: false,
 		});
@@ -119,8 +130,8 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 			//Build feature collection from control data set
 			let _locations = context.parameters.dataSet;
 			for (let _locationId of _locations.sortedRecordIds) {
-				let _longitude = _locations.records[_locationId].getValue("address1_latitude") != null ? _locations.records[_locationId].getFormattedValue("address1_longitude") : "";
-				let _latitude = _locations.records[_locationId].getValue("address1_longitude") != null ? _locations.records[_locationId].getFormattedValue("address1_latitude") : "";
+				let _longitude = _locations.records[_locationId].getValue(this._latFieldName) != null ? _locations.records[_locationId].getFormattedValue(this._lonFieldName) : "";
+				let _latitude = _locations.records[_locationId].getValue(this._lonFieldName) != null ? _locations.records[_locationId].getFormattedValue(this._latFieldName) : "";
 
 				if (_latitude != "" && _longitude != "") {
 					const point1 = new atlas.data.Feature(new atlas.data.Point([_longitude.replace(",", ".") as unknown as number, _latitude.replace(",", ".") as unknown as number]), {
@@ -141,7 +152,7 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 
 
 			//Create a layer to render the individual locations as pins.
-			let pinSymbolLayer = new atlas.layer.SymbolLayer(datasource, "sl1", {
+			this._pinSymbolLayer = new atlas.layer.SymbolLayer(datasource, "sl1", {
 				textOptions: {
 					textField: ['get', 'name'],
 					offset: [0, -2.5],
@@ -154,9 +165,9 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 
 			//Add all layers to the map.
 
-			_map.layers.add(pinSymbolLayer);
+			_map.layers.add(this._pinSymbolLayer);
 			//Add click handler for pins
-			_map.events.add('click', pinSymbolLayer, this.clicked);
+			_map.events.add('click', this._pinSymbolLayer, this.clicked);
 
 			this.map = _map;
 		}
@@ -176,8 +187,8 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 	//
 	private toggleLayer = (clickEvent: MouseEvent) => {
 		var geoJSON;
-		// let url = "https://azuremapshapestorage.blob.core.windows.net/shapes/plz-gebiete.json";
-		let url = "https://azuremapshapestorage.blob.core.windows.net/shapes/BezirksgrenzenAT.json"
+		//let url = "https://azuremapshapestorage.blob.core.windows.net/shapes/plz-gebiete.json";
+		let url = (clickEvent.target as HTMLOptionElement).value ? (clickEvent.target as HTMLOptionElement).value : "";
 
 		// JSON.parse(url);
 
@@ -195,20 +206,21 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 				Math.floor(Math.random() * 256),
 				Math.floor(Math.random() * 256),
 				Math.floor(Math.random() * 256)],
-				fillOpacity: 0.8
+			fillOpacity: 0.8
 		});
 		let linelayer = new atlas.layer.LineLayer(datasourcePoly, "ll1", {
 			strokeColor: 'black',
 			strokeWidth: 2
 		})
-		this.map.layers.add(polygonLayer);
-		this.map.layers.add(linelayer);
+		this.map.layers.add(linelayer, this._pinSymbolLayer);
+		this.map.layers.add(polygonLayer, linelayer);
+
 
 		//Import from GeoJSON
-		datasourcePoly.importDataFromUrl(url);
+		datasourcePoly.importDataFromUrl(url ? url : "");
 		//Update the map view to show the data.
 		var bounds = atlas.data.BoundingBox.fromData(datasourcePoly.toJson());
-	
+
 		this.map.setCamera({
 			bounds: bounds,
 			padding: 5

@@ -3,10 +3,9 @@
   <control namespace="pag" constructor="pcfAzureMapsClusters" version="0.0.1" display-name-key="PCF Map" description-key="Configurable map that shows entities as pins and allows loading of GeoJSON and SHP layers" control-type="standard">
     <data-set name="dataSet" display-name-key="Dataset_Display_Key">
     </data-set>
-    <property name="LatitudeField" display-name-key="Latitude field name"
-        description-key="Name of the table column containing latitude values" of-type="Decimal" usage="input" required="true" />
-          <property name="LongitudeField" display-name-key="Longitude field name"
-        description-key="Name of the table column containing Longitude values" of-type="Decimal" usage="input" required="true" />
+    <property name="LatitudeField" display-name-key="Latitude field" description-key="Name of the table column containing latitude values" of-type="SingleLine.Text" usage="input" required="true" />
+    <property name="LongitudeField" display-name-key="Longitude field" description-key="Name of the table column containing Longitude values" of-type="SingleLine.Text" usage="input" required="true" />
+    <property name="AzureMapsKey" display-name-key="Azure Maps key field" description-key="Key for Azure Maps" of-type="SingleLine.Text" usage="input" required="true" />
     <resources>
       <code path="index.ts" order="1"/>
       <css path="atlas.min.css" order="1" />
