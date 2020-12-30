@@ -4,6 +4,9 @@ import * as atlas from "azure-maps-control";
 import { TrafficControl } from "./TrafficControl";
 import { LayerControl } from "./LayerControl";
 import { isContext } from "vm";
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
+import LayerSelectorControl from './LayerSelector';
 
 type DataSet = ComponentFramework.PropertyTypes.DataSet;
 
@@ -31,7 +34,7 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 	 * Empty constructor.
 	 */
 	constructor() {
-
+	
 	}
 
 	/**
@@ -59,22 +62,28 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 		this._layerSelectorContainer.setAttribute("id", "layers");
 		this._layerSelectorContainer.setAttribute("style", "float:left;width:20%;min-width:50px;height:100%;");
 
-		this._layerFieldSet = document.createElement('fieldset');
+		// this._layerFieldSet = document.createElement('fieldset');
 
-		for (var i = 0; i < 3; i++) {
-			var opt = document.createElement('input');
-			opt.setAttribute('type', 'checkbox');
-			opt.setAttribute('value', 'https://azuremapshapestorage.blob.core.windows.net/shapes/BezirksgrenzenAT.json');
-			opt.setAttribute('id', 'Layer' + i);
-			opt.addEventListener('click', this.toggleLayer);
-			var label = document.createElement('label');
-			label.setAttribute('for', 'Layer' + i);
-			label.innerHTML = 'Layer ' + i;
-			this._layerFieldSet.appendChild(opt);
-			this._layerFieldSet.appendChild(label);
-			this._layerFieldSet.appendChild(_br);
-		}
-		this._layerSelectorContainer.appendChild(this._layerFieldSet);
+		// for (var i = 0; i < 3; i++) {
+		// 	var opt = document.createElement('input');
+		// 	opt.setAttribute('type', 'checkbox');
+		// 	opt.setAttribute('value', 'https://azuremapshapestorage.blob.core.windows.net/shapes/BezirksgrenzenAT.json');
+		// 	opt.setAttribute('id', 'Layer' + i);
+		// 	opt.addEventListener('click', this.toggleLayer);
+		// 	var label = document.createElement('label');
+		// 	label.setAttribute('for', 'Layer' + i);
+		// 	label.innerHTML = 'Layer ' + i;
+		// 	this._layerFieldSet.appendChild(opt);
+		// 	this._layerFieldSet.appendChild(label);
+		// 	this._layerFieldSet.appendChild(_br);
+		// }
+		//this._layerSelectorContainer.appendChild(this._layerFieldSet);
+
+		//Render React based layerselector into layer selector container
+		ReactDOM.render(React.createElement(LayerSelectorControl, {
+			map: this.map
+		}), this._layerSelectorContainer);
+
 		//create map DIV
 		this._mapContainer = document.createElement('div');
 		this._mapContainer.setAttribute("id", "map");
@@ -98,9 +107,8 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 			enableAccessibility: false,
 		});
 
-
+		//On map ready, add map controls
 		_map.events.add('ready', function (this: pcfAzureMapsClusters) {
-
 			_map.controls.add([
 				new atlas.control.ZoomControl(),
 				new atlas.control.StyleControl(),
@@ -187,7 +195,7 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 
 			_map.layers.add(this._pinSymbolLayer);
 			//Add click handler for pins
-			_map.events.add('click', this._pinSymbolLayer, this.clicked);
+			_map.events.add('click', this._pinSymbolLayer, this.clicked.bind(this));
 
 			this.map = _map;
 		}

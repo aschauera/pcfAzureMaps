@@ -14,6 +14,9 @@
     "@types/shpjs": "^3.4.0",
     "azure-maps-control": "^2.0.14",
     "azure-storage": "^2.10.3",
+    "office-ui-fabric-react": "^7.155.3",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "shpjs": "^3.6.3"
   },
   "devDependencies": {
