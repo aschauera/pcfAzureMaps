@@ -3,6 +3,7 @@ import DataSetInterfaces = ComponentFramework.PropertyHelper.DataSetApi;
 import * as atlas from "azure-maps-control";
 import { TrafficControl } from "./TrafficControl";
 import { LayerControl } from "./LayerControl";
+import { isContext } from "vm";
 
 type DataSet = ComponentFramework.PropertyTypes.DataSet;
 
@@ -18,8 +19,12 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 	private _uploadShpButton: HTMLButtonElement;
 	private _layerCounter = 1;
 
+
+	// Reference to ComponentFramework Context object
+	private _context: ComponentFramework.Context<IInputs>;
 	private _latFieldName: string;
 	private _lonFieldName: string;
+	private _entityLogicalName: string;
 
 
 	/**
@@ -40,9 +45,15 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 	public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void, state: ComponentFramework.Dictionary, container: HTMLDivElement) {
 		let _map: atlas.Map;
 
+		//Get values from config and context
+		this._context = context;
 		this._latFieldName = context.parameters.LatitudeField.raw ? context.parameters.LatitudeField.raw : '';
 		this._lonFieldName = context.parameters.LongitudeField.raw ? context.parameters.LongitudeField.raw : '';
-		//create layer DIV
+		//Store entity logical name
+		this._entityLogicalName = context.parameters.dataSet.getTargetEntityType();
+
+		//create HTML
+		//creata a layer selector by adding options to a fieldset and setting the value of the HTML options to the URL of the GeoJSON file
 		let _br = document.createElement('br');
 		this._layerSelectorContainer = document.createElement('div');
 		this._layerSelectorContainer.setAttribute("id", "layers");
@@ -114,8 +125,17 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 	/**
 	 * Called when any value in the property bag has changed. This includes field values, data-sets, global values such as container height and width, offline status, control metadata values such as label, visible, etc.
 	 * @param context The entire property bag available to control via Context Object; It contains values as set up by the customizer mapped to names defined in the manifest, as well as utility functions
+	 * Creates a symbol layer with the entitities in the currently selected view provided by the dataSet. 
 	 */
 	public updateView(context: ComponentFramework.Context<IInputs>): void {
+		this.CreateMapPins(context);
+	}
+
+	/**
+	 * Creates a symbol layer with clickable pins from selected entities and view
+	 * @param context DataSet from selected entitites - filled automatically with current selected view
+	 */
+	private CreateMapPins(context: ComponentFramework.Context<IInputs>) {
 		if (context.parameters.dataSet.loading) {
 			return;
 		}
@@ -173,18 +193,28 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 		}
 	}
 
+	/**
+	 * Opens the default entity form for the entity linked to the clicked pin in the symbol layer
+	 * @param e Mouse click event containing target shapes
+	 */
 	private clicked(e: atlas.MapMouseEvent) {
 		if (e.shapes && e.shapes.length > 0) {
 			if (e.shapes[0] instanceof atlas.Shape && e.shapes[0].getType() === 'Point') {
 				var properties = e.shapes[0].getProperties();
-				//Link to entity form
-				window.location.href = "https://andreasaschauer1.crm4.dynamics.com/main.aspx?appid=5f0b88a7-1ddc-e911-a995-000d3a3a1688&pagetype=entityrecord&etn=account&id=" + properties.id as string;
+				//Link to entity form 			
+				this._context.navigation.openForm({
+					entityName: this._entityLogicalName,
+					entityId: properties.id,
+					openInNewWindow: true
+				});
 			}
 		}
 	}
 
-	//Toggle layer visibility
-	//
+	/**
+	 * Toggle layer visibility for the layer selected in the layer selection. Reads the layer URL from the value property of the clicked HTML Option
+	 * @param clickEvent Map Click event
+	 */
 	private toggleLayer = (clickEvent: MouseEvent) => {
 		var geoJSON;
 		//let url = "https://azuremapshapestorage.blob.core.windows.net/shapes/plz-gebiete.json";
