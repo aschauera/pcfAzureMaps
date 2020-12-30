@@ -1,5 +1,5 @@
-# pcfAzureMaps
-A PowerApps PCF control that displays a dataset as pins on Azure Map
+# PCF Map
+A PowerApps PCF control that displays a dataset as pins on Azure Map. Works with any entity that has lat and lon fields
 
 Forked from Jens Schroeders great PCF cluster map control, extended to support more generic scenarios like:
 
