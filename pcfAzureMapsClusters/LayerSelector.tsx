@@ -2,24 +2,30 @@ import * as React from 'react';
 import * as atlas from "azure-maps-control";
 import { debug } from 'console';
 
-
+/**
+ * Holds properties for the layer control
+ */
 interface ILayerControlProps {
     map: atlas.Map,
 }
 
-interface IState{
-    layerUrl :string
+/**
+ * Holds state for the layer control
+ */
+interface ILayerControlState {
+    currentLayer: string,
+    allLayers: []
 }
 
 /**
  * Represents the layer selector control
  */
-export default class LayerSelectorControl extends React.Component<ILayerControlProps, IState> {
+export default class LayerSelectorControl extends React.Component<ILayerControlProps, ILayerControlState> {
 
 
     constructor(props: ILayerControlProps) {
         super(props);
-        this.state = { layerUrl : "" }; 
+        this.state = { allLayers: [], currentLayer: "" };
         this.addLayerClicked = this.addLayerClicked.bind(this);
     }
 
@@ -31,11 +37,11 @@ export default class LayerSelectorControl extends React.Component<ILayerControlP
         alert('Add layer clicked');
     }
 
-    handleChange(event:React.ChangeEvent<HTMLInputElement>) {
-        this.setState({layerUrl: event.target.value});
-      }
+    handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({ currentLayer: event.target.value });
+    }
 
-    LayerUrlTextbox() { return <input type="text" value={ this.state.layerUrl }  defaultValue="Enter URL to Layer" className="textbox" /> }
+    LayerUrlTextbox() { return <input type="text" value={this.state.currentLayer} defaultValue="Enter URL to Layer" className="textbox" /> }
 
     AddLayerButton() {
         return <button id='btnAddLayer' onClick={this.addLayerClicked} className="button addbutton" >Add Layer</button>
