@@ -72,24 +72,17 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 		// 	opt.addEventListener('click', this.toggleLayer);
 		// 	var label = document.createElement('label');
 		// 	label.setAttribute('for', 'Layer' + i);
-		// 	label.innerHTML = 'Layer ' + i;
+		// 	label.innerHTML = 'Gebietsebene ' + i;
 		// 	this._layerFieldSet.appendChild(opt);
 		// 	this._layerFieldSet.appendChild(label);
 		// 	this._layerFieldSet.appendChild(_br);
 		// }
 		//this._layerSelectorContainer.appendChild(this._layerFieldSet);
 
-		//Render React based layerselector into layer selector container
-		ReactDOM.render(React.createElement(LayerSelectorControl, {
-			map: this.map
-		}), this._layerSelectorContainer);
-
 		//create map DIV
 		this._mapContainer = document.createElement('div');
 		this._mapContainer.setAttribute("id", "map");
 		this._mapContainer.setAttribute("style", "float:left;width:80%;min-width:290px;height:100%;");
-
-		container.append(this._layerSelectorContainer);
 		container.append(this._mapContainer);
 
 		//URL to custom endpoint to fetch Access token
@@ -112,8 +105,8 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 			_map.controls.add([
 				new atlas.control.ZoomControl(),
 				new atlas.control.StyleControl(),
-				new TrafficControl({ style: 'auto' }),
-				new LayerControl({ style: 'auto' })
+				new TrafficControl({ style: 'auto' })
+				//new LayerControl({ style: 'auto' })
 			],
 				{
 					position: atlas.ControlPosition.TopRight
@@ -127,6 +120,14 @@ export class pcfAzureMapsClusters implements ComponentFramework.StandardControl<
 			"type": "FeatureCollection",
 			"features": []
 		};
+
+		
+		//Render React based layerselector into layer selector container
+		ReactDOM.render(React.createElement(LayerSelectorControl, {
+			map: this.map,
+			topLayer: this._pinSymbolLayer
+		}), this._layerSelectorContainer);
+		container.append(this._layerSelectorContainer);
 	}
 
 

@@ -1,7 +1,48 @@
-.button{
-
+.css-input {
+    padding: 5px;
+    font-size: 16px;
+    border-width: 1px;
+    border-color: #CCCCCC;
+    background-color: #FFFFFF;
+    color: #000000;
+    border-style: solid;
+    border-radius: 0px;
+    box-shadow: 0px 0px 5px rgba(66,66,66,.75);
+    text-shadow: 0px 0px 5px rgba(66,66,66,.75);
+}
+.css-input:focus {
+    outline:none;
 }
 
-.textbox{
-    
-}
+.addLayerButton {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    height: 30px;
+    line-height: 50px;
+    color: rgba(0, 0, 0, 0.74);
+    font-family: Open Sans;
+    width: 100px;
+    font-size: 21px;
+    font-weight: 400;
+    padding: 40px;
+    background-color: #FFFFFF;
+    -webkit-box-shadow: 1px 1px 20px 0 #7E7F81;
+    -moz-box-shadow: 1px 1px 20px 0 #7E7F81;
+    box-shadow: 1px 1px 20px 0 #7E7F81;
+    text-shadow: 1px 1px 20px #FFFFFF;
+    border: solid rgba(199, 200, 201, 0.86) 3px;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    text-align: center;
+ }
+ 
+ .addLayerButton:hover {
+    background: rgba(157, 158, 161, 0.19);
+    border: solid rgba(102, 109, 118, 0.27) 1px;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    text-decoration: none;
+ }
